@@ -1,0 +1,77 @@
+html.dark-mode-ext--custom {
+  color-scheme: dark !important;
+}
+
+html.dark-mode-ext--custom body {
+  background-color: #1a1a2e !important;
+  color: #e0e0e0 !important;
+}
+
+html.dark-mode-ext--custom a {
+  color: #8b8bff !important;
+}
+html.dark-mode-ext--custom a:visited {
+  color: #b39ddb !important;
+}
+
+html.dark-mode-ext--custom input,
+html.dark-mode-ext--custom textarea,
+html.dark-mode-ext--custom select,
+html.dark-mode-ext--custom button {
+  background-color: #252540 !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+}
+
+html.dark-mode-ext--custom table,
+html.dark-mode-ext--custom th,
+html.dark-mode-ext--custom td {
+  border-color: #333 !important;
+}
+html.dark-mode-ext--custom th {
+  background-color: #252540 !important;
+}
+html.dark-mode-ext--custom tr:nth-child(even) {
+  background-color: #1e1e35 !important;
+}
+
+html.dark-mode-ext--custom pre,
+html.dark-mode-ext--custom code {
+  background-color: #1e1e35 !important;
+  color: #c5c8c6 !important;
+}
+
+html.dark-mode-ext--custom blockquote {
+  border-left-color: #6c63ff !important;
+  background-color: #1e1e35 !important;
+  color: #ccc !important;
+}
+
+html.dark-mode-ext--custom h1,
+html.dark-mode-ext--custom h2,
+html.dark-mode-ext--custom h3,
+html.dark-mode-ext--custom h4,
+html.dark-mode-ext--custom h5,
+html.dark-mode-ext--custom h6 {
+  color: #fff !important;
+}
+
+html.dark-mode-ext--custom p,
+html.dark-mode-ext--custom li,
+html.dark-mode-ext--custom span,
+html.dark-mode-ext--custom div {
+  color: #ddd !important;
+}
+
+html.dark-mode-ext--custom header,
+html.dark-mode-ext--custom nav,
+html.dark-mode-ext--custom footer {
+  background-color: #16162b !important;
+}
+
+html.dark-mode-ext--custom img,
+html.dark-mode-ext--custom video,
+html.dark-mode-ext--custom canvas,
+html.dark-mode-ext--custom picture {
+  opacity: 0.92;
+}

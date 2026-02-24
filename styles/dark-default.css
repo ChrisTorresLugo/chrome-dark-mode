@@ -1,0 +1,18 @@
+html.dark-mode-ext--dark {
+  filter: invert(1) hue-rotate(180deg) !important;
+  background-color: #111 !important;
+}
+
+html.dark-mode-ext--dark img,
+html.dark-mode-ext--dark video,
+html.dark-mode-ext--dark canvas,
+html.dark-mode-ext--dark svg image,
+html.dark-mode-ext--dark picture,
+html.dark-mode-ext--dark [style*="background-image"],
+html.dark-mode-ext--dark iframe {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+html.dark-mode-ext--dark [role="img"] {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
