@@ -1,74 +1,55 @@
 (() => {
-  const THEME_CLASSES = ["dark-mode-ext--dark", "dark-mode-ext--dim", "dark-mode-ext--custom"];
-  const STYLE_ID = "dark-mode-ext-styles";
+  const THEME_CLASSES = ['dark', 'dim', 'custom'];
+  const STYLE_ID = 'dark-mode-ext-styles';
   let currentTheme = null;
 
-  function injectCSS(theme) {
-    removeCSS();
-    const link = document.createElement("link");
-    link.id = STYLE_ID;
-    link.rel = "stylesheet";
-    link.href = chrome.runtime.getURL(`styles/dark-${theme}.css`);
-    (document.head || document.documentElement).appendChild(link);
-  }
-
-  function removeCSS() {
-    document.getElementById(STYLE_ID)?.remove();
+  function styleLink() {
+    return document.getElementById(STYLE_ID);
   }
 
   function applyTheme(theme) {
-    THEME_CLASSES.forEach((cls) => document.documentElement.classList.remove(cls));
-    if (theme) {
-      document.documentElement.classList.add(`dark-mode-ext--${theme}`);
-      injectCSS(theme);
-      currentTheme = theme;
-    } else {
-      removeCSS();
-      currentTheme = null;
-    }
-  }
+    const root = document.documentElement;
+    if (!root) return false;
 
-  function getDomain() {
-    return location.hostname;
+    THEME_CLASSES.forEach((name) => root.classList.remove(`dark-mode-ext--${name}`));
+    const existing = styleLink();
+
+    if (!theme) {
+      existing?.remove();
+      currentTheme = null;
+      return true;
+    }
+
+    root.classList.add(`dark-mode-ext--${theme}`);
+    const link = existing || document.createElement('link');
+    link.id = STYLE_ID;
+    link.rel = 'stylesheet';
+    link.href = chrome.runtime.getURL(`styles/dark-${theme}.css`);
+    if (!existing) (document.head || root).appendChild(link);
+    currentTheme = theme;
+    return true;
   }
 
   async function init() {
-    const data = await chrome.storage.sync.get({
-      enabled: true,
-      theme: "dark",
-      autoEnable: true,
-      whitelist: [],
-    });
-
-    const domain = getDomain();
-    const isWhitelisted = data.whitelist.includes(domain);
-
-    if (data.enabled && !isWhitelisted) {
-      applyTheme(data.theme);
+    try {
+      const state = await chrome.runtime.sendMessage({ action: 'getTabState' });
+      applyTheme(state?.enabled ? state.theme : null);
+    } catch {
+      applyTheme(null);
     }
   }
 
-  chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.action === "toggle") {
-      chrome.storage.sync.get({ theme: "dark", whitelist: [] }, (data) => {
-        const isWhitelisted = data.whitelist.includes(getDomain());
-        if (msg.enabled && !isWhitelisted) {
-          applyTheme(data.theme);
-        } else {
-          applyTheme(null);
-        }
-      });
-    } else if (msg.action === "setTheme") {
-      if (currentTheme) {
-        applyTheme(msg.theme);
-      }
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === 'setTabState') {
+      applyTheme(message.enabled ? message.theme : null);
+    } else if (message.action === 'setTheme' && currentTheme) {
+      applyTheme(message.theme);
     }
   });
 
-  // Apply as early as possible to reduce flash
   if (document.documentElement) {
     init();
   } else {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener('DOMContentLoaded', init, { once: true });
   }
 })();

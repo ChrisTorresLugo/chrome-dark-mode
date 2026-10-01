@@ -56,10 +56,7 @@ html.dark-mode-ext--custom h6 {
   color: #fff !important;
 }
 
-html.dark-mode-ext--custom p,
-html.dark-mode-ext--custom li,
-html.dark-mode-ext--custom span,
-html.dark-mode-ext--custom div {
+html.dark-mode-ext--custom :where(p, li, span, div) {
   color: #ddd !important;
 }
 
@@ -72,6 +69,13 @@ html.dark-mode-ext--custom footer {
 html.dark-mode-ext--custom img,
 html.dark-mode-ext--custom video,
 html.dark-mode-ext--custom canvas,
-html.dark-mode-ext--custom picture {
+html.dark-mode-ext--custom picture,
+html.dark-mode-ext--custom svg {
   opacity: 0.92;
+}
+
+html.dark-mode-ext--custom embed,
+html.dark-mode-ext--custom object {
+  background: #1a1a2e !important;
+  color-scheme: dark;
 }

@@ -16,3 +16,15 @@ html.dark-mode-ext--dark iframe {
 html.dark-mode-ext--dark [role="img"] {
   filter: invert(1) hue-rotate(180deg) !important;
 }
+
+html.dark-mode-ext--dark input,
+html.dark-mode-ext--dark textarea,
+html.dark-mode-ext--dark select,
+html.dark-mode-ext--dark button {
+  color-scheme: dark;
+}
+
+html.dark-mode-ext--dark embed,
+html.dark-mode-ext--dark object {
+  filter: invert(1) hue-rotate(180deg) !important;
+}

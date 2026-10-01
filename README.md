@@ -6,7 +6,7 @@ A Manifest V3 Chrome extension that applies dark mode to all websites, with spec
 
 - **3 theme modes**: Dark (full inversion), Dim (softer inversion), Custom (CSS overrides)
 - **Per-site whitelist**: Exclude specific domains from dark mode
-- **Auto-enable**: Remembers your preference across sessions
+- **Per-tab enablement**: Turning dark mode on affects only the current tab and follows that tab across navigation
 - **archive.ph support**: Walks the DOM to override inline styles that defeat standard CSS-based dark mode
 - **Toolbar badge**: Shows ON/OFF state at a glance
 
@@ -20,9 +20,11 @@ A Manifest V3 Chrome extension that applies dark mode to all websites, with spec
 
 ## How It Works
 
-**Standard sites** — The Dark and Dim themes use CSS `filter: invert() hue-rotate()` on the `<html>` element with counter-inversion on images, videos, and canvases to preserve their original colors. The Custom theme applies direct CSS overrides to common elements.
+**Standard sites** — The Dark and Dim themes use CSS `filter: invert() hue-rotate()` on the `<html>` element with counter-inversion on images, videos, canvases, SVGs, and embedded media to preserve their original colors. The Custom theme applies direct CSS overrides to common elements. Enablement is stored per tab for the current browser session; theme selection and the site whitelist remain synchronized preferences.
 
-**archive.ph** — Archive pages convert all CSS to inline `style` attributes, which breaks filter-based approaches. A dedicated content script (`archive-handler.js`) walks the DOM, detects light backgrounds and dark text via computed styles, inverts them, and uses a `MutationObserver` to handle dynamically loaded content.
+**archive.ph** — Archive pages convert all CSS to inline `style` attributes, which breaks filter-based approaches. A dedicated content script (`archive-handler.js`) processes only styled elements, batches dynamically inserted nodes, and restores original inline declarations when disabled.
+
+**PDFs** — The service worker attempts to inject the selected theme into PDF URLs when Chrome permits scripting access. Chrome's built-in PDF viewer can reject extension injection; those pages are left unchanged rather than interfering with PDF viewing.
 
 ## Project Structure
 
@@ -30,6 +32,7 @@ A Manifest V3 Chrome extension that applies dark mode to all websites, with spec
 chrome-dark-mode/
 ├── manifest.json          # MV3 extension manifest
 ├── background.js          # Service worker (badge, storage init)
+├── state.js               # Pure per-tab state and PDF URL helpers
 ├── content.js             # Main content script (all sites)
 ├── archive-handler.js     # archive.ph inline style handler
 ├── popup.html             # Extension popup UI

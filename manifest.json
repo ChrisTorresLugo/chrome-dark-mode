@@ -3,7 +3,8 @@
   "name": "Dark Mode",
   "version": "1.0.0",
   "description": "Apply dark mode to all websites, including archive.ph pages with heavy inline styles.",
-  "permissions": ["activeTab", "storage", "scripting"],
+  "permissions": ["activeTab", "storage", "scripting", "tabs"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
