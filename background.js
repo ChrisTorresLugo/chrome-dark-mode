@@ -34,12 +34,29 @@ async function updateBadge(tabId, enabled) {
   await chrome.action.setBadgeBackgroundColor({ tabId, color: enabled ? '#6c63ff' : '#666' });
 }
 
-async function sendToTab(tabId, message) {
+function contentScriptsFor(url) {
+  const files = ['content.js'];
+  try {
+    if (/^archive\.(ph|today|is|li|vn|fo|md)$/.test(new URL(url).hostname)) {
+      files.push('archive-handler.js');
+    }
+  } catch {
+    // Restricted or malformed URLs have no matching content scripts.
+  }
+  return files;
+}
+
+async function sendToTab(tabId, url, message) {
   if (!tabId) return;
   try {
     await chrome.tabs.sendMessage(tabId, message);
   } catch {
-    // Content scripts cannot run on every restricted page and PDF viewers.
+    try {
+      await chrome.scripting.executeScript({ target: { tabId }, files: contentScriptsFor(url) });
+      await chrome.tabs.sendMessage(tabId, message);
+    } catch {
+      // Restricted pages and PDF viewers do not allow content-script injection.
+    }
   }
 }
 
@@ -84,7 +101,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const tab = await chrome.tabs.get(tabId);
       const state = await getRuntimeState(tabId, tab.url);
       await updateBadge(tabId, state.enabled);
-      await sendToTab(tabId, { action: 'setTabState', ...state });
+      await sendToTab(tabId, tab.url, { action: 'setTabState', ...state });
       await injectPdf(tabId, tab.url, state.theme, state.enabled);
       sendResponse(state);
       return;
@@ -94,7 +111,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       await chrome.storage.sync.set({ theme: message.theme });
       const tab = await chrome.tabs.get(tabId);
       const state = await getRuntimeState(tabId, tab.url);
-      await sendToTab(tabId, { action: 'setTheme', theme: state.theme });
+      await sendToTab(tabId, tab.url, { action: 'setTheme', theme: state.theme });
       await injectPdf(tabId, tab.url, state.theme, state.enabled);
       sendResponse(state);
     }
