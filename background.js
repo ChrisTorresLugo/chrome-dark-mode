@@ -125,15 +125,20 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   await chrome.storage.session.set({ tabStates: removeTabState(tabStates, tabId) });
 });
 
-chrome.tabs.onActivated.addListener(async ({ tabId }) => {
-  const tab = await chrome.tabs.get(tabId);
-  const state = await getRuntimeState(tabId, tab.url);
-  await updateBadge(tabId, state.enabled);
-});
+async function refreshTabAppearance(tabId, loadedTab) {
+  try {
+    const tab = loadedTab ?? await chrome.tabs.get(tabId);
+    const state = await getRuntimeState(tabId, tab.url);
+    await updateBadge(tabId, state.enabled);
+    if (loadedTab) await injectPdf(tabId, tab.url, state.theme, state.enabled);
+  } catch (error) {
+    // The tab can close while Chrome is handling the event or updating its badge.
+    if (error?.message !== `No tab with id: ${tabId}.`) throw error;
+  }
+}
 
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status !== 'complete') return;
-  const state = await getRuntimeState(tabId, tab.url);
-  await updateBadge(tabId, state.enabled);
-  await injectPdf(tabId, tab.url, state.theme, state.enabled);
+chrome.tabs.onActivated.addListener(({ tabId }) => refreshTabAppearance(tabId));
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete') return refreshTabAppearance(tabId, tab);
 });
